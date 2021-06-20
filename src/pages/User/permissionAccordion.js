@@ -11,8 +11,28 @@ import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 
 const useStyles = makeStyles(
   (theme) => ({
+    accordion: {
+      boxShadow: 'none',
+      backgroundColor: 'transparent',
+      borderBottom: `1px solid ${theme.palette.divider}`,
+      '&:before': {
+        display: 'none',
+      },
+      '&.Mui-expanded': {
+        margin: 0,
+      },
+    },
+    accordionSummary: {
+      flexDirection: 'row-reverse',
+      '& .MuiAccordionSummary-expandIcon': {
+        marginRight: 0,
+        marginLeft: theme.spacing(-1.5),
+        opacity: (props) => (props.showExpandIcon ? '1' : '0'),
+      },
+    },
     summaryWrapper: {
       display: 'flex',
+      flex: 1,
       justifyContent: 'space-between',
       alignItems: 'center',
     },
@@ -21,6 +41,11 @@ const useStyles = makeStyles(
     },
     details: {
       flexDirection: 'column',
+      paddingRight: '27px',
+      paddingLeft: theme.spacing(5),
+      '& .MuiFormControlLabel-labelPlacementStart': {
+        justifyContent: 'space-between',
+      },
     },
   }),
   { index: 1 },
@@ -35,22 +60,31 @@ const PermissionAccordion = ({
   children,
   onSwitch,
   switchChecked,
+  expandable = true,
   ...props
 }) => {
-  const cls = useStyles();
+  const cls = useStyles({ showExpandIcon: expandable });
 
   return (
-    <Accordion>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <div
-          className={cls.summaryWrapper}
-          onClick={stopPropagation}
-          onFocus={stopPropagation}
-        >
+    <Accordion
+      {...(expandable ? {} : { expanded: false })}
+      className={cls.accordion}
+    >
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        className={cls.accordionSummary}
+      >
+        <div className={cls.summaryWrapper}>
           <Typography variant="body1" className={cls.summaryTitle}>
             {title}
           </Typography>
-          <Switch checked={switchChecked} onChange={onSwitch} color="primary" />
+          <Switch
+            checked={switchChecked}
+            onChange={onSwitch}
+            color="primary"
+            onClick={stopPropagation}
+            onFocus={stopPropagation}
+          />
         </div>
       </AccordionSummary>
       <AccordionDetails className={cls.details}>{children}</AccordionDetails>

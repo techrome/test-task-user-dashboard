@@ -9,7 +9,7 @@ import {
   FormControlLabel,
 } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Settings as SettingsIcon } from '@material-ui/icons';
 import union from 'lodash/union';
 import { connect } from 'react-redux';
@@ -73,12 +73,20 @@ const useStyles = makeStyles(
       alignItems: 'center',
     },
     permissionsAccordions: {},
+    permissionDecoration: {
+      width: theme.spacing(1),
+      height: theme.spacing(1),
+      borderRadius: '50%',
+      margin: '0 12px 1px 0',
+      display: 'inline-block',
+    },
   }),
   { index: 1 },
 );
 
 const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
   const cls = useStyles();
+  const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
   const userId = props.match.params.id;
 
@@ -323,6 +331,7 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
                       switchChecked={el.perms.every((el2) =>
                         originalUser.permissions.includes(el2.value),
                       )}
+                      expandable={el.perms.length > 1}
                     >
                       {el.perms.length > 1 &&
                         el.perms.map((el2, index2) => {
@@ -350,9 +359,18 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
                                     permissionEnabled ? 'body1' : 'body2'
                                   }
                                 >
+                                  <span
+                                    className={cls.permissionDecoration}
+                                    style={{
+                                      backgroundColor: permissionEnabled
+                                        ? theme.palette.primary.main
+                                        : theme.palette.error.main,
+                                    }}
+                                  />{' '}
                                   {el2.title}
                                 </Typography>
                               }
+                              labelPlacement="start"
                             />
                           );
                         })}
