@@ -80,6 +80,10 @@ const useStyles = makeStyles(
       margin: '0 12px 1px 0',
       display: 'inline-block',
     },
+    disabledSection: {
+      opacity: '0.3',
+      pointerEvents: 'none',
+    },
   }),
   { index: 1 },
 );
@@ -99,6 +103,8 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
     role: null,
   });
   const [errors, setErrors] = useState({ ...values });
+
+  const userActive = !!originalUser?.isActive;
 
   const onFieldChange = (field, value) => {
     setValues({
@@ -215,8 +221,13 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
                       </div>
                     )}
                   </div>
-                  <Button>Upload a photo</Button>
-                  <div className={cls.name}>
+                  {userActive && <Button>Upload a photo</Button>}
+                  <div
+                    className={clsx(
+                      cls.name,
+                      !userActive && cls.disabledSection,
+                    )}
+                  >
                     <Typography variant="h3" align="center" gutterBottom>
                       {originalUser.firstName} {originalUser.lastName}
                     </Typography>
@@ -224,14 +235,16 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
                       {originalUser.email}
                     </Typography>
                   </div>
-                  <Button
-                    color="tertiary"
-                    variant="contained"
-                    onClick={handleInviteResend}
-                    size="large"
-                  >
-                    Resend the invite
-                  </Button>
+                  {userActive && (
+                    <Button
+                      color="tertiary"
+                      variant="contained"
+                      onClick={handleInviteResend}
+                      size="large"
+                    >
+                      Resend the invite
+                    </Button>
+                  )}
                 </div>
               </Grid>
               <Grid item xs={12} md={6} lg={4}>
@@ -242,7 +255,7 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
                   className={cls.statusWrapper}
                   control={
                     <Switch
-                      checked={originalUser.isActive}
+                      checked={userActive}
                       onChange={handleStatusChange}
                       color="primary"
                     />
@@ -250,13 +263,18 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
                   label={
                     <Typography variant="body2">
                       The user is{' '}
-                      <strong>
-                        {originalUser.isActive ? 'Active' : 'Inactive'}
-                      </strong>{' '}
+                      <strong>{userActive ? 'Active' : 'Inactive'}</strong>{' '}
                     </Typography>
                   }
                 />
-                <Grid container spacing={3} className={cls.fieldsWrapper}>
+                <Grid
+                  container
+                  spacing={3}
+                  className={clsx(
+                    cls.fieldsWrapper,
+                    !userActive && cls.disabledSection,
+                  )}
+                >
                   <Grid item xs={12}>
                     <Input
                       placeholder="* First Name"
@@ -295,14 +313,16 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
                     />
                   </Grid>
                 </Grid>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={handleSaveChanges}
-                  size="large"
-                >
-                  Save changes
-                </Button>
+                {userActive && (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={handleSaveChanges}
+                    size="large"
+                  >
+                    Save changes
+                  </Button>
+                )}
               </Grid>
               <Grid item xs={12} lg={4}>
                 <FlexList
@@ -317,7 +337,12 @@ const UserPage = ({ users, editUser, resetModal, setModalInfo, ...props }) => {
                     {roles.find((el) => el.value === originalUser.role)?.title}
                   </Typography>
                 </FlexList>
-                <div className={cls.permissionsAccordions}>
+                <div
+                  className={clsx(
+                    cls.permissionsAccordions,
+                    !userActive && cls.disabledSection,
+                  )}
+                >
                   {permissionGroups.map((el, index) => (
                     <PermissionAccordion
                       key={index}
